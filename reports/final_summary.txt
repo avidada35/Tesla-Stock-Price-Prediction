@@ -1,0 +1,89 @@
+TESLA STOCK PRICE PREDICTION
+Final Model Comparison Report
+==================================================
+
+     Model  Horizon    RMSE     MAE  MAPE(%)
+ SimpleRNN        1 15.8671 10.0396   3.1220
+      LSTM        1 29.6814 17.1820   5.0814
+LSTM_Tuned        1 37.1090 21.7823   6.8385
+ SimpleRNN        5 36.0643 24.0446   7.2591
+      LSTM        5 42.1378 26.6929   8.2343
+ SimpleRNN       10 45.9637 30.1040   9.0782
+      LSTM       10 47.6852 32.2538  10.1067
+
+==================================================
+Best Model per Horizon:
+  Horizon 1d → SimpleRNN | RMSE=15.8671
+  Horizon 5d → SimpleRNN | RMSE=36.0643
+  Horizon 10d → SimpleRNN | RMSE=45.9637
+
+Best GridSearch Params (LSTM h1):
+  batch_size: 32
+  model__dropout: 0.1
+  model__learning_rate: 0.0005
+  model__units: 64
+
+==================================================
+
+╔══════════════════════════════════════════════════════════════════╗
+║          TESLA STOCK PREDICTION — KEY FINDINGS                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+1. MODEL PERFORMANCE SUMMARY
+──────────────────────────────
+  Horizon 1d  → Best: SimpleRNN    RMSE = 15.8671
+  Horizon 5d  → Best: SimpleRNN    RMSE = 36.0643
+  Horizon 10d → Best: SimpleRNN    RMSE = 45.9637
+
+  LSTM vs SimpleRNN improvement (RMSE):
+    Horizon 1d  : -87.06%
+    Horizon 5d  : -16.84%
+    Horizon 10d : -3.75%
+
+2. EFFECT OF FORECAST HORIZON
+──────────────────────────────
+  SimpleRNN  → h1=15.8671  h5=36.0643  h10=45.9637
+  LSTM       → h1=29.6814  h5=42.1378  h10=47.6852
+
+  RMSE and MAPE both increase with horizon length.
+  Longer horizons compound prediction uncertainty —
+  each additional day magnifies earlier errors.
+  The 10-day forecast is significantly harder because
+  non-linear market dynamics diverge from learned patterns.
+
+3. IMPACT OF HYPERPARAMETER TUNING
+────────────────────────────────────
+  Default LSTM h1 RMSE : 29.6814
+  Tuned   LSTM h1 RMSE : 37.1090
+  Improvement           : -25.02%
+
+  Best params found by GridSearchCV:
+    units         : 64
+    dropout       : 0.1
+    learning_rate : 0.0005
+    batch_size    : 32
+
+4. LIMITATIONS
+──────────────
+  • Model uses only historical price (univariate).
+    No news sentiment, earnings, macroeconomic data.
+  • Highly sensitive to sudden events: COVID-19 crash
+    (Feb–Mar 2020) and Tesla earnings surprises caused
+    price discontinuities that pattern-learning cannot anticipate.
+  • Stationarity assumption: price distributions shift
+    over time; models trained on 2010–2018 may underfit
+    the high-volatility 2019–2020 regime.
+  • Window size (60 days) is fixed — optimal window
+    may differ across market regimes.
+
+5. SUGGESTED IMPROVEMENTS
+──────────────────────────
+  → Add NLP sentiment from financial news / Twitter
+  → Include macro features: VIX, S&P 500, interest rates
+  → Try GRU (faster training, competitive accuracy)
+  → Transformer / Temporal Fusion Transformer (TFT)
+     for long-horizon forecasting
+  → Add attention mechanism on LSTM encoder
+  → Ensemble: average SimpleRNN + LSTM predictions
+  → Walk-forward (expanding window) validation
+     for more realistic backtesting
